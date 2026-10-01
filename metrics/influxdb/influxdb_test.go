@@ -26,6 +26,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/metrics/internal"
@@ -120,4 +121,13 @@ func findFirstDiffPos(a, b string) string {
 		}
 	}
 	return ""
+}
+
+func TestReadMeterSkipsHistogramWithEmptyWindow(t *testing.T) {
+	h := metrics.NewTimeWindowHistogram(time.Nanosecond)
+	h.Update(5)
+	time.Sleep(time.Millisecond)
+	if measurement, fields := readMeter("", "h", h); fields != nil {
+		t.Fatalf("histogram with empty window reported %s: %v", measurement, fields)
+	}
 }

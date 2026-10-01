@@ -41,7 +41,7 @@ func readMeter(namespace, name string, i interface{}) (string, map[string]interf
 		return measurement, fields
 	case metrics.Histogram:
 		ms := metric.Snapshot()
-		if ms.Count() <= 0 {
+		if ms.Count() <= 0 || ms.Size() <= 0 {
 			break
 		}
 		ps := ms.Percentiles([]float64{0.25, 0.5, 0.75, 0.95, 0.99, 0.999, 0.9999})

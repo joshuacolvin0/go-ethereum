@@ -180,12 +180,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 	if metrics.Enabled() {
 		h := fmt.Sprintf("%s/%s/%d/%#02x", p2p.HandleHistName, ProtocolName, peer.Version(), msg.Code)
 		defer func(start time.Time) {
-			sampler := func() metrics.Sample {
-				return metrics.ResettingSample(
-					metrics.NewExpDecaySample(1028, 0.015),
-				)
-			}
-			metrics.GetOrRegisterHistogramLazy(h, nil, sampler).Update(time.Since(start).Microseconds())
+			metrics.GetOrRegisterTimeWindowHistogram(h, nil, time.Minute).Update(time.Since(start).Microseconds())
 		}(start)
 	}
 

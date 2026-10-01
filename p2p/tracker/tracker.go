@@ -261,8 +261,5 @@ func (t *Tracker) staleMeter(code uint64) *metrics.Meter {
 
 func (t *Tracker) waitHistogram(code uint64) metrics.Histogram {
 	name := fmt.Sprintf("%s/%s/%d/%#02x", waitHistName, t.cap.Name, t.cap.Version, code)
-	sampler := func() metrics.Sample {
-		return metrics.ResettingSample(metrics.NewExpDecaySample(1028, 0.015))
-	}
-	return metrics.GetOrRegisterHistogramLazy(name, nil, sampler)
+	return metrics.GetOrRegisterTimeWindowHistogram(name, nil, time.Minute)
 }
